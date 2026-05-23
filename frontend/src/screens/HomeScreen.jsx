@@ -1,5 +1,7 @@
 import { Button, Col, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import ProductCard from '../components/ProductCard';
+import products from '../products';
 
 const HomeScreen = () => {
   return (
@@ -23,17 +25,13 @@ const HomeScreen = () => {
       </Row>
 
       <section className="mt-5">
-        <h2 className="h4 mb-3">Osnovne kategorije</h2>
-        <Row className="g-3">
-          <Col md={4}>
-            <div className="info-box">Edukativne igračke</div>
-          </Col>
-          <Col md={4}>
-            <div className="info-box">Plišane igračke</div>
-          </Col>
-          <Col md={4}>
-            <div className="info-box">Drustvene igre</div>
-          </Col>
+        <h2 className="h4 mb-3">Katalog igračaka</h2>
+        <Row>
+          {products.map((product) => (
+            <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
+              <ProductCard product={product} />
+            </Col>
+          ))}
         </Row>
       </section>
     </>

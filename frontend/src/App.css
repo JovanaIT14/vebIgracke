@@ -49,6 +49,55 @@ main {
   text-align: center;
 }
 
+.product-card {
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eadfe2;
+}
+
+.product-card-img {
+  height: 200px;
+  object-fit: cover;
+  background-color: #f8f9fa;
+}
+
+.product-title {
+  min-height: 2.5rem;
+  font-size: 1.05rem;
+  color: #222;
+}
+
+.product-description {
+  min-height: 4.5rem;
+  font-size: 0.95rem;
+}
+
+.product-meta {
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.product-price {
+  color: #c9435c;
+  font-weight: 700;
+}
+
+.rating span {
+  margin-right: 0.12rem;
+}
+
+.rating svg {
+  color: #ffc107;
+}
+
+.rating-text {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding-left: 0.35rem;
+}
+
 .navbar.bg-primary,
 .btn-primary {
   background-color: #e85d75 !important;

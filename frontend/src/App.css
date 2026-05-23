@@ -1,38 +1,73 @@
-.App {
-  text-align: center;
+main {
+  min-height: 80vh;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+:root {
+  --bs-primary: #e85d75;
+  --bs-primary-rgb: 232, 93, 117;
+  --bs-link-color: #c9435c;
+  --bs-link-hover-color: #a83248;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app-shell {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.app-shell main {
+  flex: 1;
+}
+
+.toyland-hero {
+  min-height: 260px;
+  border-radius: 8px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  background:
+    linear-gradient(135deg, rgba(232, 93, 117, 0.82), rgba(255, 193, 7, 0.7), rgba(32, 201, 151, 0.76)),
+    url('https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=900&q=80');
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
-.App-link {
-  color: #61dafb;
+.welcome-text {
+  font-size: 1.15rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.info-box {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background-color: #fff;
+  padding: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.navbar.bg-primary,
+.btn-primary {
+  background-color: #e85d75 !important;
+  border-color: #e85d75 !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #d64c65 !important;
+  border-color: #d64c65 !important;
+}
+
+.btn-outline-primary {
+  color: #c9435c;
+  border-color: #e85d75;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #e85d75;
+  border-color: #e85d75;
 }

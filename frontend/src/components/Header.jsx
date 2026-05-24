@@ -1,8 +1,12 @@
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
 import { FaHome, FaShoppingCart, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Header = () => {
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+
   return (
     <header>
       <Navbar bg="primary" data-bs-theme="dark" expand="lg" collapseOnSelect>
@@ -20,6 +24,11 @@ const Header = () => {
               <Nav.Link as={NavLink} to="/korpa">
                 <FaShoppingCart className="me-1" />
                 Korpa
+                {cartCount > 0 && (
+                  <Badge bg="light" text="dark" className="ms-1">
+                    {cartCount}
+                  </Badge>
+                )}
               </Nav.Link>
               <Nav.Link as={NavLink} to="/prijava">
                 <FaSignInAlt className="me-1" />

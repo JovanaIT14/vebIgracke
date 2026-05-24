@@ -1,11 +1,16 @@
-import { Alert, Button, Col, Image, ListGroup, Row } from 'react-bootstrap';
+import { useState } from 'react';
+import { Alert, Button, Col, Form, Image, ListGroup, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Rating from '../components/Rating';
+import { useCart } from '../context/CartContext';
 import products from '../products';
 
 const ProductScreen = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
   const product = products.find((item) => item.id === id);
 
   if (!product) {
@@ -18,6 +23,11 @@ const ProductScreen = () => {
       </>
     );
   }
+
+  const addToCartHandler = () => {
+    addToCart(product, quantity);
+    navigate('/korpa');
+  };
 
   return (
     <>
@@ -41,12 +51,29 @@ const ProductScreen = () => {
             <ListGroup.Item>Uzrast: {product.uzrast}</ListGroup.Item>
             <ListGroup.Item>Materijal: {product.materijal}</ListGroup.Item>
             <ListGroup.Item>Broj na stanju: {product.brojNaStanju}</ListGroup.Item>
+            <ListGroup.Item>
+              <Row className="align-items-center">
+                <Col>Količina</Col>
+                <Col>
+                  <Form.Select value={quantity} onChange={(event) => setQuantity(Number(event.target.value))}>
+                    {[...Array(product.brojNaStanju).keys()].map((number) => (
+                      <option key={number + 1} value={number + 1}>
+                        {number + 1}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Col>
+              </Row>
+            </ListGroup.Item>
           </ListGroup>
-          <LinkContainer to="/korpa">
-            <Button variant="primary" className="mt-3" disabled={product.brojNaStanju === 0}>
-              Dodaj u korpu
-            </Button>
-          </LinkContainer>
+          <Button
+            variant="primary"
+            className="mt-3"
+            disabled={product.brojNaStanju === 0}
+            onClick={addToCartHandler}
+          >
+            Dodaj u korpu
+          </Button>
         </Col>
       </Row>
     </>

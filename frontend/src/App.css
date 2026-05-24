@@ -112,6 +112,12 @@ main {
   overflow: hidden;
 }
 
+.cart-item {
+  border: 1px solid #eadfe2;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
 .rating span {
   margin-right: 0.12rem;
 }

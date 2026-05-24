@@ -1,10 +1,12 @@
 import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
-import { FaHome, FaShoppingCart, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { FaHome, FaShoppingCart, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
 
 const Header = () => {
   const { cartItems } = useCart();
+  const { currentUser } = useUser();
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
@@ -30,14 +32,23 @@ const Header = () => {
                   </Badge>
                 )}
               </Nav.Link>
-              <Nav.Link as={NavLink} to="/prijava">
-                <FaSignInAlt className="me-1" />
-                Prijava
-              </Nav.Link>
-              <Nav.Link as={NavLink} to="/registracija">
-                <FaUserPlus className="me-1" />
-                Registracija
-              </Nav.Link>
+              {currentUser ? (
+                <Nav.Link as={NavLink} to="/profil">
+                  <FaUser className="me-1" />
+                  Profil
+                </Nav.Link>
+              ) : (
+                <>
+                  <Nav.Link as={NavLink} to="/prijava">
+                    <FaSignInAlt className="me-1" />
+                    Prijava
+                  </Nav.Link>
+                  <Nav.Link as={NavLink} to="/registracija">
+                    <FaUserPlus className="me-1" />
+                    Registracija
+                  </Nav.Link>
+                </>
+              )}
             </Nav>
           </Navbar.Collapse>
         </Container>

@@ -9,7 +9,7 @@ const HomeScreen = () => {
       <Row className="align-items-center g-4">
         <Col lg={7}>
           <p className="welcome-text text-primary fw-semibold mb-2">Dobrodošli u Toyland!</p>
-          <h1>Prodavnica igračaka za najmlađe</h1>
+          <h1>Toyland prodavnica igračaka</h1>
           <p className="lead text-muted">
             Pronađite igračke koje podstiču maštu, učenje i zabavu djece svih uzrasta.
           </p>

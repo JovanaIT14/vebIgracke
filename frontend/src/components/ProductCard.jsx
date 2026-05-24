@@ -1,9 +1,10 @@
 import { Badge, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import Rating from './Rating';
 
 const ProductCard = ({ product }) => {
   return (
-    <Card className="product-card my-3">
+    <Card as={Link} to={`/proizvod/${product.id}`} className="product-card my-3">
       <Card.Img
         src={product.slika}
         variant="top"

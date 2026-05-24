@@ -49,6 +49,11 @@ main {
   text-align: center;
 }
 
+.catalog-filter {
+  width: 100%;
+  max-width: 560px;
+}
+
 .product-card {
   height: 100%;
   border-radius: 8px;

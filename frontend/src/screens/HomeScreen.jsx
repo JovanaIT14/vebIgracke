@@ -1,9 +1,22 @@
-import { Button, Col, Row } from 'react-bootstrap';
+import { useState } from 'react';
+import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import ProductCard from '../components/ProductCard';
 import products from '../products';
 
 const HomeScreen = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  const categories = [...new Set(products.map((product) => product.kategorija))];
+
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.naziv.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === '' || product.kategorija === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <>
       <Row className="align-items-center g-4">
@@ -25,14 +38,46 @@ const HomeScreen = () => {
       </Row>
 
       <section className="mt-5">
-        <h2 className="h4 mb-3">Katalog igračaka</h2>
-        <Row>
-          {products.map((product) => (
-            <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
-              <ProductCard product={product} />
-            </Col>
-          ))}
-        </Row>
+        <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
+          <h2 className="h4 mb-0">Katalog igračaka</h2>
+          <Form className="catalog-filter">
+            <Row className="g-2">
+              <Col md={7}>
+                <Form.Control
+                  type="text"
+                  placeholder="Pretraži po nazivu"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                />
+              </Col>
+              <Col md={5}>
+                <Form.Select
+                  value={selectedCategory}
+                  onChange={(event) => setSelectedCategory(event.target.value)}
+                >
+                  <option value="">Sve kategorije</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
+          </Form>
+        </div>
+
+        {filteredProducts.length === 0 ? (
+          <Alert variant="warning">Nema igračaka koje odgovaraju pretrazi.</Alert>
+        ) : (
+          <Row>
+            {filteredProducts.map((product) => (
+              <Col key={product.id} sm={12} md={6} lg={4} xl={3}>
+                <ProductCard product={product} />
+              </Col>
+            ))}
+          </Row>
+        )}
       </section>
     </>
   );

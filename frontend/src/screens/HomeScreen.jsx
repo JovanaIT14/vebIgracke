@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import ProductCard from '../components/ProductCard';
-import products from '../products';
+import { getProducts } from '../productStorage';
 
 const HomeScreen = () => {
+  const [products] = useState(getProducts);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 

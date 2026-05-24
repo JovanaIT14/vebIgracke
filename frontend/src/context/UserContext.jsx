@@ -9,7 +9,12 @@ const getStoredValue = (key, defaultValue) => {
 };
 
 export const UserProvider = ({ children }) => {
-  const [userList, setUserList] = useState(() => getStoredValue('users', users));
+  const [userList, setUserList] = useState(() => {
+    const storedUsers = getStoredValue('users', users);
+    const hasAdmin = storedUsers.some((user) => user.isAdmin);
+
+    return hasAdmin ? storedUsers : [users[0], ...storedUsers];
+  });
   const [currentUser, setCurrentUser] = useState(() => getStoredValue('currentUser', null));
 
   useEffect(() => {

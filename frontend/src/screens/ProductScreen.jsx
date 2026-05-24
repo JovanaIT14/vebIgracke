@@ -4,12 +4,13 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import Rating from '../components/Rating';
 import { useCart } from '../context/CartContext';
-import products from '../products';
+import { getProducts } from '../productStorage';
 
 const ProductScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const [products] = useState(getProducts);
   const [quantity, setQuantity] = useState(1);
   const product = products.find((item) => item.id === id);
 

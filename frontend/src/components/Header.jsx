@@ -1,5 +1,5 @@
 import { Badge, Container, Nav, Navbar } from 'react-bootstrap';
-import { FaHome, FaShoppingCart, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa';
+import { FaClipboardList, FaHome, FaShoppingCart, FaSignInAlt, FaUser, FaUserPlus } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
@@ -33,10 +33,24 @@ const Header = () => {
                 )}
               </Nav.Link>
               {currentUser ? (
-                <Nav.Link as={NavLink} to="/profil">
-                  <FaUser className="me-1" />
-                  Profil
-                </Nav.Link>
+                <>
+                  {currentUser.isAdmin && (
+                    <>
+                      <Nav.Link as={NavLink} to="/admin/proizvodi">
+                        <FaClipboardList className="me-1" />
+                        Admin proizvodi
+                      </Nav.Link>
+                      <Nav.Link as={NavLink} to="/admin/narudzbine">
+                        <FaClipboardList className="me-1" />
+                        Admin narudžbine
+                      </Nav.Link>
+                    </>
+                  )}
+                  <Nav.Link as={NavLink} to="/profil">
+                    <FaUser className="me-1" />
+                    Profil
+                  </Nav.Link>
+                </>
               ) : (
                 <>
                   <Nav.Link as={NavLink} to="/prijava">

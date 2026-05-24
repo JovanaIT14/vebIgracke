@@ -2,6 +2,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import { CartProvider } from './context/CartContext';
 import { UserProvider } from './context/UserContext';
+import AdminOrderListScreen from './screens/AdminOrderListScreen';
+import AdminProductEditScreen from './screens/AdminProductEditScreen';
+import AdminProductListScreen from './screens/AdminProductListScreen';
 import CartScreen from './screens/CartScreen';
 import CheckoutScreen from './screens/CheckoutScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -28,6 +31,9 @@ function App() {
               <Route path="prijava" element={<LoginScreen />} />
               <Route path="registracija" element={<RegisterScreen />} />
               <Route path="profil" element={<ProfileScreen />} />
+              <Route path="admin/proizvodi" element={<AdminProductListScreen />} />
+              <Route path="admin/proizvodi/:id/uredi" element={<AdminProductEditScreen />} />
+              <Route path="admin/narudzbine" element={<AdminOrderListScreen />} />
               <Route path="*" element={<NotFoundScreen />} />
             </Route>
           </Routes>

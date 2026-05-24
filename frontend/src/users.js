@@ -1,5 +1,13 @@
 const users = [
   {
+    id: '0',
+    name: 'Admin Toyland',
+    email: 'admin@toyland.com',
+    password: 'admin123',
+    isAdmin: true,
+    orders: [],
+  },
+  {
     id: '1',
     name: 'Jovana Đurić',
     email: 'jovana@toyland.com',

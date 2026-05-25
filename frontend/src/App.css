@@ -7,6 +7,9 @@ main {
   --bs-primary-rgb: 232, 93, 117;
   --bs-link-color: #c9435c;
   --bs-link-hover-color: #a83248;
+  --toyland-border: #eadfe2;
+  --toyland-soft: #fff7f8;
+  --toyland-text: #2b2b2b;
 }
 
 .app-shell {
@@ -17,6 +20,26 @@ main {
 
 .app-shell main {
   flex: 1;
+}
+
+.navbar {
+  box-shadow: 0 0.35rem 1rem rgba(117, 31, 48, 0.12);
+}
+
+.navbar-brand {
+  font-size: 1.35rem;
+}
+
+.navbar .nav-link {
+  border-radius: 8px;
+  margin-left: 0.25rem;
+  padding: 0.55rem 0.75rem;
+  font-weight: 600;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.16);
 }
 
 .toyland-hero {
@@ -34,14 +57,23 @@ main {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: 0;
+  box-shadow: 0 0.75rem 1.5rem rgba(201, 67, 92, 0.16);
 }
 
 .welcome-text {
   font-size: 1.15rem;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--toyland-text);
+}
+
 .info-box {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--toyland-border);
   border-radius: 8px;
   background-color: #fff;
   padding: 1.25rem;
@@ -54,31 +86,64 @@ main {
   max-width: 560px;
 }
 
+.form-control,
+.form-select {
+  border-color: var(--toyland-border);
+  border-radius: 8px;
+  min-height: 42px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #e85d75;
+  box-shadow: 0 0 0 0.2rem rgba(232, 93, 117, 0.18);
+}
+
+.card,
+.list-group-item,
+.table {
+  border-color: var(--toyland-border);
+}
+
+.card {
+  border-radius: 8px;
+  box-shadow: 0 0.25rem 0.85rem rgba(43, 43, 43, 0.05);
+}
+
 .product-card {
   height: 100%;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #eadfe2;
+  border: 1px solid var(--toyland-border);
   color: inherit;
   text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background-color: #fff;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .product-card:hover {
   transform: translateY(-3px);
+  border-color: rgba(232, 93, 117, 0.45);
   box-shadow: 0 0.5rem 1.25rem rgba(201, 67, 92, 0.12);
 }
 
 .product-card-img {
-  height: 200px;
+  height: 210px;
   object-fit: cover;
   background-color: #f8f9fa;
+}
+
+.product-card .card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
 }
 
 .product-title {
   min-height: 2.5rem;
   font-size: 1.05rem;
   color: #222;
+  line-height: 1.25;
 }
 
 .product-title:hover {
@@ -86,18 +151,21 @@ main {
 }
 
 .product-description {
-  min-height: 4.5rem;
+  min-height: 4.75rem;
   font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .product-meta {
   font-size: 0.9rem;
   color: #495057;
+  line-height: 1.55;
 }
 
 .product-price {
   color: #c9435c;
   font-weight: 700;
+  margin-top: auto;
 }
 
 .product-detail-img {
@@ -107,15 +175,16 @@ main {
 }
 
 .product-detail-list {
-  border: 1px solid #eadfe2;
+  border: 1px solid var(--toyland-border);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .cart-item {
-  border: 1px solid #eadfe2;
+  border: 1px solid var(--toyland-border);
   border-radius: 8px;
   margin-bottom: 0.75rem;
+  background-color: #fff;
 }
 
 .rating span {
@@ -143,6 +212,7 @@ main {
 .btn-primary:focus {
   background-color: #d64c65 !important;
   border-color: #d64c65 !important;
+  box-shadow: 0 0.35rem 0.85rem rgba(214, 76, 101, 0.2);
 }
 
 .btn-outline-primary {
@@ -154,4 +224,67 @@ main {
 .btn-outline-primary:focus {
   background-color: #e85d75;
   border-color: #e85d75;
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btn-light {
+  border-color: var(--toyland-border);
+}
+
+.btn-light:hover {
+  background-color: var(--toyland-soft);
+  border-color: #e85d75;
+}
+
+.badge {
+  border-radius: 8px;
+}
+
+.table {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.table th {
+  background-color: var(--toyland-soft);
+  color: var(--toyland-text);
+}
+
+@media (max-width: 991.98px) {
+  .navbar .nav-link {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
+
+  .toyland-hero {
+    min-height: 220px;
+  }
+
+  .catalog-filter {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .app-shell main {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+
+  .toyland-hero {
+    min-height: 180px;
+    font-size: 1.5rem;
+  }
+
+  .product-card-img {
+    height: 190px;
+  }
+
+  .product-description {
+    min-height: auto;
+  }
 }

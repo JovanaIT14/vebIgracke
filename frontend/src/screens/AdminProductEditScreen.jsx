@@ -10,6 +10,7 @@ const AdminProductEditScreen = () => {
   const navigate = useNavigate();
   const [products] = useState(getProducts);
   const { currentUser } = useUser();
+  const isNewProduct = !id || id === 'novi';
   const product = products.find((item) => item.id === id);
   const [naziv, setNaziv] = useState(product?.naziv || '');
   const [slika, setSlika] = useState(product?.slika || '');
@@ -26,7 +27,7 @@ const AdminProductEditScreen = () => {
     return <Alert variant="danger">Nemate pristup administratorskom dijelu.</Alert>;
   }
 
-  if (!product) {
+  if (!isNewProduct && !product) {
     return <Alert variant="warning">Proizvod nije pronađen.</Alert>;
   }
 
@@ -48,8 +49,9 @@ const AdminProductEditScreen = () => {
       return;
     }
 
-    const updatedProduct = {
-      ...product,
+    const savedProduct = {
+      ...(product || {}),
+      id: product?.id || Date.now().toString(),
       naziv,
       slika,
       opis,
@@ -60,7 +62,9 @@ const AdminProductEditScreen = () => {
       brojNaStanju: Number(brojNaStanju),
       rating: Number(rating),
     };
-    const updatedProducts = products.map((item) => (item.id === product.id ? updatedProduct : item));
+    const updatedProducts = isNewProduct
+      ? [...products, savedProduct]
+      : products.map((item) => (item.id === product.id ? savedProduct : item));
 
     saveProducts(updatedProducts);
 
@@ -78,7 +82,7 @@ const AdminProductEditScreen = () => {
         <Col lg={8}>
           <Card>
             <Card.Body>
-              <h1 className="h3 mb-4">Izmjena igračke</h1>
+              <h1 className="h3 mb-4">{isNewProduct ? 'Dodavanje igračke' : 'Izmjena igračke'}</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={submitHandler}>
                 <Form.Group className="mb-3" controlId="naziv">
@@ -132,7 +136,7 @@ const AdminProductEditScreen = () => {
                   <Form.Control type="number" step="0.5" value={rating} onChange={(event) => setRating(event.target.value)} />
                 </Form.Group>
                 <Button type="submit" variant="primary">
-                  Sačuvaj izmjene
+                  {isNewProduct ? 'Dodaj proizvod' : 'Sačuvaj izmjene'}
                 </Button>
               </Form>
             </Card.Body>

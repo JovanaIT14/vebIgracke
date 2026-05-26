@@ -38,6 +38,7 @@ const OrderScreen = () => {
           <Card>
             <Card.Body>
               <Card.Title>Dostava</Card.Title>
+              <Card.Text className="mb-1">{order.shippingAddress.fullName}</Card.Text>
               <Card.Text className="mb-1">{order.shippingAddress.address}</Card.Text>
               <Card.Text className="mb-1">
                 {order.shippingAddress.postalCode} {order.shippingAddress.city}

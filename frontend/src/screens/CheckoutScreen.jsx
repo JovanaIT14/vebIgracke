@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 const CheckoutScreen = () => {
   const { cartItems, shippingAddress, saveShippingAddress, placeOrder } = useCart();
   const navigate = useNavigate();
+  const [fullName, setFullName] = useState(shippingAddress.fullName || '');
   const [address, setAddress] = useState(shippingAddress.address || '');
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
@@ -15,7 +16,7 @@ const CheckoutScreen = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    const newAddress = { address, city, postalCode, phone };
+    const newAddress = { fullName, address, city, postalCode, phone };
     saveShippingAddress(newAddress);
     placeOrder(newAddress);
     navigate('/narudzbina');
@@ -37,6 +38,10 @@ const CheckoutScreen = () => {
       <Col lg={7}>
         <h1 className="h3 mb-3">Adresa dostave</h1>
         <Form onSubmit={submitHandler}>
+          <Form.Group className="mb-3" controlId="fullName">
+            <Form.Label>Ime i prezime</Form.Label>
+            <Form.Control value={fullName} onChange={(event) => setFullName(event.target.value)} required />
+          </Form.Group>
           <Form.Group className="mb-3" controlId="address">
             <Form.Label>Adresa</Form.Label>
             <Form.Control value={address} onChange={(event) => setAddress(event.target.value)} required />

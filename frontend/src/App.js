@@ -32,6 +32,7 @@ function App() {
               <Route path="registracija" element={<RegisterScreen />} />
               <Route path="profil" element={<ProfileScreen />} />
               <Route path="admin/proizvodi" element={<AdminProductListScreen />} />
+              <Route path="admin/proizvodi/novi" element={<AdminProductEditScreen />} />
               <Route path="admin/proizvodi/:id/uredi" element={<AdminProductEditScreen />} />
               <Route path="admin/narudzbine" element={<AdminOrderListScreen />} />
               <Route path="*" element={<NotFoundScreen />} />

@@ -1,29 +1,17 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import users from '../users';
-
-const UserContext = createContext();
-
-const getStoredValue = (key, defaultValue) => {
-  const storedValue = localStorage.getItem(key);
-  return storedValue ? JSON.parse(storedValue) : defaultValue;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  login as loginAction,
+  logout as logoutAction,
+  register as registerAction,
+} from '../slices/authSlice';
 
 export const UserProvider = ({ children }) => {
-  const [userList, setUserList] = useState(() => {
-    const storedUsers = getStoredValue('users', users);
-    const hasAdmin = storedUsers.some((user) => user.isAdmin);
+  return children;
+};
 
-    return hasAdmin ? storedUsers : [users[0], ...storedUsers];
-  });
-  const [currentUser, setCurrentUser] = useState(() => getStoredValue('currentUser', null));
-
-  useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(userList));
-  }, [userList]);
-
-  useEffect(() => {
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  }, [currentUser]);
+export const useUser = () => {
+  const dispatch = useDispatch();
+  const { userList, currentUser } = useSelector((state) => state.auth);
 
   const login = (email, password) => {
     const user = userList.find((item) => item.email === email && item.password === password);
@@ -32,7 +20,7 @@ export const UserProvider = ({ children }) => {
       return false;
     }
 
-    setCurrentUser(user);
+    dispatch(loginAction({ email, password }));
     return true;
   };
 
@@ -43,28 +31,13 @@ export const UserProvider = ({ children }) => {
       return false;
     }
 
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-      password,
-      orders: [],
-    };
-
-    setUserList((items) => [...items, newUser]);
-    setCurrentUser(newUser);
+    dispatch(registerAction({ name, email, password }));
     return true;
   };
 
   const logout = () => {
-    setCurrentUser(null);
+    dispatch(logoutAction());
   };
 
-  return (
-    <UserContext.Provider value={{ userList, currentUser, login, register, logout }}>
-      {children}
-    </UserContext.Provider>
-  );
+  return { userList, currentUser, login, register, logout };
 };
-
-export const useUser = () => useContext(UserContext);

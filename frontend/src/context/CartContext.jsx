@@ -1,57 +1,34 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-
-const CartContext = createContext();
-
-const getStoredValue = (key, defaultValue) => {
-  const storedValue = localStorage.getItem(key);
-  return storedValue ? JSON.parse(storedValue) : defaultValue;
-};
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addToCart as addToCartAction,
+  placeOrder as placeOrderAction,
+  removeFromCart as removeFromCartAction,
+  saveShippingAddress as saveShippingAddressAction,
+  updateCartQuantity as updateCartQuantityAction,
+} from '../slices/cartSlice';
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => getStoredValue('cartItems', []));
-  const [shippingAddress, setShippingAddress] = useState(() => getStoredValue('shippingAddress', {}));
-  const [order, setOrder] = useState(() => getStoredValue('order', null));
+  return children;
+};
 
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  useEffect(() => {
-    localStorage.setItem('shippingAddress', JSON.stringify(shippingAddress));
-  }, [shippingAddress]);
-
-  useEffect(() => {
-    localStorage.setItem('order', JSON.stringify(order));
-  }, [order]);
+export const useCart = () => {
+  const dispatch = useDispatch();
+  const { cartItems, shippingAddress, order } = useSelector((state) => state.cart);
 
   const addToCart = (product, quantity) => {
-    setCartItems((items) => {
-      const existingItem = items.find((item) => item.id === product.id);
-
-      if (existingItem) {
-        return items.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + quantity, product.brojNaStanju) }
-            : item
-        );
-      }
-
-      return [...items, { ...product, quantity }];
-    });
+    dispatch(addToCartAction({ product, quantity }));
   };
 
   const updateCartQuantity = (id, quantity) => {
-    setCartItems((items) =>
-      items.map((item) => (item.id === id ? { ...item, quantity: Number(quantity) } : item))
-    );
+    dispatch(updateCartQuantityAction({ id, quantity }));
   };
 
   const removeFromCart = (id) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+    dispatch(removeFromCartAction(id));
   };
 
   const saveShippingAddress = (address) => {
-    setShippingAddress(address);
+    dispatch(saveShippingAddressAction(address));
   };
 
   const placeOrder = (address, paymentMethod, isPaid) => {
@@ -63,28 +40,19 @@ export const CartProvider = ({ children }) => {
       totalPrice: cartItems.reduce((total, item) => total + item.cijena * item.quantity, 0),
     };
 
-    setOrder(newOrder);
-    setCartItems([]);
+    dispatch(placeOrderAction({ address, paymentMethod, isPaid }));
 
     return newOrder;
   };
 
-  return (
-    <CartContext.Provider
-      value={{
-        cartItems,
-        shippingAddress,
-        order,
-        addToCart,
-        updateCartQuantity,
-        removeFromCart,
-        saveShippingAddress,
-        placeOrder,
-      }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
+  return {
+    cartItems,
+    shippingAddress,
+    order,
+    addToCart,
+    updateCartQuantity,
+    removeFromCart,
+    saveShippingAddress,
+    placeOrder,
+  };
 };
-
-export const useCart = () => useContext(CartContext);

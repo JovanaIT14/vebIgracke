@@ -54,10 +54,12 @@ export const CartProvider = ({ children }) => {
     setShippingAddress(address);
   };
 
-  const placeOrder = (address) => {
+  const placeOrder = (address, paymentMethod, isPaid) => {
     const newOrder = {
       items: cartItems,
       shippingAddress: address,
+      paymentMethod,
+      isPaid,
       totalPrice: cartItems.reduce((total, item) => total + item.cijena * item.quantity, 0),
     };
 

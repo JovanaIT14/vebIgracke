@@ -44,6 +44,8 @@ const OrderScreen = () => {
                 {order.shippingAddress.postalCode} {order.shippingAddress.city}
               </Card.Text>
               <Card.Text>{order.shippingAddress.phone}</Card.Text>
+              <Card.Text className="mb-1">Plaćanje: {order.paymentMethod}</Card.Text>
+              {order.paymentMethod === 'PayPal' && <Card.Text>Status plaćanja: Plaćeno</Card.Text>}
               <h3 className="h5">Ukupno: {order.totalPrice.toFixed(2)} KM</h3>
             </Card.Body>
           </Card>

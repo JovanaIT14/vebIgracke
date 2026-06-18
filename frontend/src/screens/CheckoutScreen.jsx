@@ -12,14 +12,21 @@ const CheckoutScreen = () => {
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
   const [phone, setPhone] = useState(shippingAddress.phone || '');
+  const [paymentMethod, setPaymentMethod] = useState('Plaćanje pouzećem');
+  const [paypalPaid, setPaypalPaid] = useState(false);
   const totalPrice = cartItems.reduce((total, item) => total + item.cijena * item.quantity, 0);
 
   const submitHandler = (event) => {
     event.preventDefault();
     const newAddress = { fullName, address, city, postalCode, phone };
     saveShippingAddress(newAddress);
-    placeOrder(newAddress);
+    placeOrder(newAddress, paymentMethod, paymentMethod === 'PayPal' ? paypalPaid : false);
     navigate('/narudzbina');
+  };
+
+  const paymentChangeHandler = (event) => {
+    setPaymentMethod(event.target.value);
+    setPaypalPaid(false);
   };
 
   if (cartItems.length === 0) {
@@ -58,7 +65,39 @@ const CheckoutScreen = () => {
             <Form.Label>Telefon</Form.Label>
             <Form.Control value={phone} onChange={(event) => setPhone(event.target.value)} required />
           </Form.Group>
-          <Button type="submit" variant="primary">
+          <Form.Group className="mb-3">
+            <Form.Label>Način plaćanja</Form.Label>
+            <Form.Check
+              type="radio"
+              id="cashOnDelivery"
+              label="Plaćanje pouzećem"
+              name="paymentMethod"
+              value="Plaćanje pouzećem"
+              checked={paymentMethod === 'Plaćanje pouzećem'}
+              onChange={paymentChangeHandler}
+            />
+            <Form.Check
+              type="radio"
+              id="paypal"
+              label="PayPal"
+              name="paymentMethod"
+              value="PayPal"
+              checked={paymentMethod === 'PayPal'}
+              onChange={paymentChangeHandler}
+            />
+          </Form.Group>
+          {paymentMethod === 'PayPal' && (
+            <div className="mb-3">
+              {paypalPaid ? (
+                <Alert variant="success">PayPal plaćanje je uspješno simulirano.</Alert>
+              ) : (
+                <Button type="button" variant="outline-primary" onClick={() => setPaypalPaid(true)}>
+                  Plati putem PayPal-a
+                </Button>
+              )}
+            </div>
+          )}
+          <Button type="submit" variant="primary" disabled={paymentMethod === 'PayPal' && !paypalPaid}>
             Potvrdi narudžbinu
           </Button>
         </Form>

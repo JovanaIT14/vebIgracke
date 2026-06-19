@@ -1,0 +1,20 @@
+{
+  "name": "veb-igracke",
+  "version": "1.0.0",
+  "description": "Toyland backend",
+  "type": "module",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "nodemon backend/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

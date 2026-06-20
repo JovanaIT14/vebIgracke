@@ -1,37 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
-import { getProducts, saveProducts } from '../productStorage';
+import {
+  useCreateProductMutation,
+  useGetProductDetailsQuery,
+  useGetProductsQuery,
+  useUpdateProductMutation,
+} from '../slices/productsApiSlice';
+import { toApiProduct, toUiProduct } from '../utils/productAdapter';
 
 const AdminProductEditScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [products] = useState(getProducts);
   const { currentUser } = useUser();
   const isNewProduct = !id || id === 'novi';
-  const product = products.find((item) => item.id === id);
-  const [naziv, setNaziv] = useState(product?.naziv || '');
-  const [slika, setSlika] = useState(product?.slika || '');
-  const [opis, setOpis] = useState(product?.opis || '');
-  const [cijena, setCijena] = useState(product?.cijena || '');
-  const [kategorija, setKategorija] = useState(product?.kategorija || '');
-  const [uzrast, setUzrast] = useState(product?.uzrast || '');
-  const [materijal, setMaterijal] = useState(product?.materijal || '');
-  const [brojNaStanju, setBrojNaStanju] = useState(product?.brojNaStanju || '');
-  const [rating, setRating] = useState(product?.rating || '');
+  const { data: backendProduct, isError } = useGetProductDetailsQuery(id, {
+    skip: isNewProduct,
+  });
+  const { data: backendProducts } = useGetProductsQuery();
+  const [createProduct] = useCreateProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
+  const cachedProduct = backendProducts?.find((item) => item._id === id);
+  const product =
+    backendProduct && !isError ? toUiProduct(backendProduct) : cachedProduct ? toUiProduct(cachedProduct) : null;
+  const [naziv, setNaziv] = useState('');
+  const [slika, setSlika] = useState('');
+  const [opis, setOpis] = useState('');
+  const [cijena, setCijena] = useState('');
+  const [kategorija, setKategorija] = useState('');
+  const [uzrast, setUzrast] = useState('');
+  const [materijal, setMaterijal] = useState('');
+  const [brojNaStanju, setBrojNaStanju] = useState('');
+  const [rating, setRating] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (product) {
+      setNaziv(product.naziv || '');
+      setSlika(product.slika || '');
+      setOpis(product.opis || '');
+      setCijena(product.cijena || '');
+      setKategorija(product.kategorija || '');
+      setUzrast(product.uzrast || '');
+      setMaterijal(product.materijal || '');
+      setBrojNaStanju(product.brojNaStanju || '');
+      setRating(product.rating || '');
+    }
+  }, [product]);
 
   if (!currentUser || !currentUser.isAdmin) {
     return <Alert variant="danger">Nemate pristup administratorskom dijelu.</Alert>;
   }
 
-  if (!isNewProduct && !product) {
-    return <Alert variant="warning">Proizvod nije pronađen.</Alert>;
+  if (!isNewProduct && isError) {
+    return <Alert variant="warning">Proizvod nije pronadjen.</Alert>;
   }
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
 
     if (
@@ -49,24 +76,23 @@ const AdminProductEditScreen = () => {
       return;
     }
 
-    const savedProduct = {
-      ...(product || {}),
-      id: product?.id || Date.now().toString(),
+    const productData = toApiProduct({
       naziv,
       slika,
       opis,
-      cijena: Number(cijena),
+      cijena,
       kategorija,
       uzrast,
       materijal,
-      brojNaStanju: Number(brojNaStanju),
-      rating: Number(rating),
-    };
-    const updatedProducts = isNewProduct
-      ? [...products, savedProduct]
-      : products.map((item) => (item.id === product.id ? savedProduct : item));
+      brojNaStanju,
+      rating,
+    });
 
-    saveProducts(updatedProducts);
+    if (isNewProduct) {
+      await createProduct(productData).unwrap();
+    } else {
+      await updateProduct({ ...productData, _id: id }).unwrap();
+    }
 
     navigate('/admin/proizvodi');
   };
@@ -82,7 +108,7 @@ const AdminProductEditScreen = () => {
         <Col lg={8}>
           <Card>
             <Card.Body>
-              <h1 className="h3 mb-4">{isNewProduct ? 'Dodavanje igračke' : 'Izmjena igračke'}</h1>
+              <h1 className="h3 mb-4">{isNewProduct ? 'Dodavanje igracke' : 'Izmjena igracke'}</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={submitHandler}>
                 <Form.Group className="mb-3" controlId="naziv">
@@ -136,7 +162,7 @@ const AdminProductEditScreen = () => {
                   <Form.Control type="number" step="0.5" value={rating} onChange={(event) => setRating(event.target.value)} />
                 </Form.Group>
                 <Button type="submit" variant="primary">
-                  {isNewProduct ? 'Dodaj proizvod' : 'Sačuvaj izmjene'}
+                  {isNewProduct ? 'Dodaj proizvod' : 'Sacuvaj izmjene'}
                 </Button>
               </Form>
             </Card.Body>

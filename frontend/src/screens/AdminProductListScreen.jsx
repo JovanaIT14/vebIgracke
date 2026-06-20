@@ -1,24 +1,27 @@
-import { useState } from 'react';
 import { Alert, Button, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import { useUser } from '../context/UserContext';
-import { getProducts, saveProducts } from '../productStorage';
+import {
+  useDeleteProductMutation,
+  useGetProductsQuery,
+} from '../slices/productsApiSlice';
+import { toUiProduct } from '../utils/productAdapter';
 
 const AdminProductListScreen = () => {
-  const [products, setProducts] = useState(getProducts);
   const { currentUser } = useUser();
+  const { data: backendProducts, isError } = useGetProductsQuery();
+  const [deleteProduct] = useDeleteProductMutation();
+  const products = backendProducts && !isError ? backendProducts.map(toUiProduct) : [];
 
-  const deleteProduct = (id) => {
-    const shouldDelete = window.confirm('Da li ste sigurni da želite obrisati proizvod?');
+  const deleteProductHandler = async (id) => {
+    const shouldDelete = window.confirm('Da li ste sigurni da zelite obrisati proizvod?');
 
     if (!shouldDelete) {
       return;
     }
 
-    const updatedProducts = products.filter((product) => product.id !== id);
-    setProducts(updatedProducts);
-    saveProducts(updatedProducts);
+    await deleteProduct(id);
   };
 
   if (!currentUser || !currentUser.isAdmin) {
@@ -59,7 +62,7 @@ const AdminProductListScreen = () => {
                     <FaEdit />
                   </Button>
                 </LinkContainer>
-                <Button variant="light" onClick={() => deleteProduct(product.id)}>
+                <Button variant="light" onClick={() => deleteProductHandler(product.id)}>
                   <FaTrash />
                 </Button>
               </td>

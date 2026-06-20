@@ -1,42 +1,31 @@
-import { Alert, Table } from 'react-bootstrap';
-import { useCart } from '../context/CartContext';
+import { Alert, Button, Table } from 'react-bootstrap';
 import { useUser } from '../context/UserContext';
+import {
+  useDeliverOrderMutation,
+  useGetOrdersQuery,
+} from '../slices/ordersApiSlice';
 
 const AdminOrderListScreen = () => {
-  const { currentUser, userList } = useUser();
-  const { order } = useCart();
+  const { currentUser } = useUser();
+  const { data: backendOrders } = useGetOrdersQuery(undefined, {
+    skip: !currentUser?.isAdmin,
+  });
+  const [deliverOrder] = useDeliverOrderMutation();
+  const orders = backendOrders || [];
+
+  const deliverHandler = async (id) => {
+    await deliverOrder(id);
+  };
 
   if (!currentUser || !currentUser.isAdmin) {
     return <Alert variant="danger">Nemate pristup administratorskom dijelu.</Alert>;
   }
 
-  const userOrders = userList.flatMap((user) =>
-    user.orders.map((item) => ({
-      ...item,
-      customer: user.name,
-      itemsText: item.items.join(', '),
-    }))
-  );
-
-  const localOrder = order
-    ? [
-        {
-          id: 'lokalna',
-          customer: 'Lokalni kupac',
-          status: 'Potvrđena',
-          totalPrice: order.totalPrice,
-          itemsText: order.items.map((item) => `${item.naziv} x ${item.quantity}`).join(', '),
-        },
-      ]
-    : [];
-
-  const orders = [...userOrders, ...localOrder];
-
   return (
     <>
-      <h1 className="h3 mb-3">Admin narudžbine</h1>
-      {orders.length === 0 ? (
-        <Alert variant="info">Nema narudžbina za prikaz.</Alert>
+      <h1 className="h3 mb-3">Admin narudzbine</h1>
+      {backendOrders && orders.length === 0 ? (
+        <Alert variant="info">Nema narudzbina za prikaz.</Alert>
       ) : (
         <Table striped bordered hover responsive>
           <thead>
@@ -49,10 +38,18 @@ const AdminOrderListScreen = () => {
           </thead>
           <tbody>
             {orders.map((item) => (
-              <tr key={item.id}>
-                <td>{item.customer}</td>
-                <td>{item.itemsText}</td>
-                <td>{item.status}</td>
+              <tr key={item._id}>
+                <td>{item.user?.name || 'Kupac'}</td>
+                <td>{item.orderItems.map((orderItem) => `${orderItem.name} x ${orderItem.qty}`).join(', ')}</td>
+                <td>
+                  {item.isDelivered ? (
+                    'Isporucena'
+                  ) : (
+                    <Button variant="outline-primary" size="sm" onClick={() => deliverHandler(item._id)}>
+                      Oznaci isporuceno
+                    </Button>
+                  )}
+                </td>
                 <td>{item.totalPrice.toFixed(2)} KM</td>
               </tr>
             ))}

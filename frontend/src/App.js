@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AdminRoute from './components/AdminRoute';
 import Layout from './components/Layout';
+import PrivateRoute from './components/PrivateRoute';
 import { CartProvider } from './context/CartContext';
 import { UserProvider } from './context/UserContext';
 import AdminOrderListScreen from './screens/AdminOrderListScreen';
@@ -26,15 +28,19 @@ function App() {
               <Route index element={<HomeScreen />} />
               <Route path="proizvod/:id" element={<ProductScreen />} />
               <Route path="korpa" element={<CartScreen />} />
-              <Route path="checkout" element={<CheckoutScreen />} />
-              <Route path="narudzbina" element={<OrderScreen />} />
               <Route path="prijava" element={<LoginScreen />} />
               <Route path="registracija" element={<RegisterScreen />} />
-              <Route path="profil" element={<ProfileScreen />} />
-              <Route path="admin/proizvodi" element={<AdminProductListScreen />} />
-              <Route path="admin/proizvodi/novi" element={<AdminProductEditScreen />} />
-              <Route path="admin/proizvodi/:id/uredi" element={<AdminProductEditScreen />} />
-              <Route path="admin/narudzbine" element={<AdminOrderListScreen />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="checkout" element={<CheckoutScreen />} />
+                <Route path="narudzbina" element={<OrderScreen />} />
+                <Route path="profil" element={<ProfileScreen />} />
+              </Route>
+              <Route element={<AdminRoute />}>
+                <Route path="admin/proizvodi" element={<AdminProductListScreen />} />
+                <Route path="admin/proizvodi/novi" element={<AdminProductEditScreen />} />
+                <Route path="admin/proizvodi/:id/uredi" element={<AdminProductEditScreen />} />
+                <Route path="admin/narudzbine" element={<AdminOrderListScreen />} />
+              </Route>
               <Route path="*" element={<NotFoundScreen />} />
             </Route>
           </Routes>

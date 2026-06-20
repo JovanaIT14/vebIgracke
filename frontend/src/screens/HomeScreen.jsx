@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, Button, Col, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import ProductCard from '../components/ProductCard';
 import { getProducts } from '../productStorage';
+import { useGetProductsQuery } from '../slices/productsApiSlice';
+import { toUiProduct } from '../utils/productAdapter';
 
 const HomeScreen = () => {
-  const [products] = useState(getProducts);
+  const { data: backendProducts, isError } = useGetProductsQuery();
+  const fallbackProducts = useMemo(() => getProducts(), []);
+  const products = backendProducts && !isError ? backendProducts.map(toUiProduct) : fallbackProducts;
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 

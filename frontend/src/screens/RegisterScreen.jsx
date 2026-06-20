@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { setCredentials } from '../slices/authSlice';
+import { useRegisterMutation } from '../slices/usersApiSlice';
 
 const RegisterScreen = () => {
   const navigate = useNavigate();
-  const { register } = useUser();
+  const dispatch = useDispatch();
+  const { register: localRegister } = useUser();
+  const [register] = useRegisterMutation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
 
     if (!name || !email || !password) {
@@ -19,11 +24,18 @@ const RegisterScreen = () => {
       return;
     }
 
-    const isRegistered = register(name, email, password);
-
-    if (!isRegistered) {
-      setError('Korisnik sa ovom email adresom već postoji.');
+    try {
+      const userData = await register({ name, email, password }).unwrap();
+      dispatch(setCredentials(userData));
+      navigate('/profil');
       return;
+    } catch (apiError) {
+      const isRegistered = localRegister(name, email, password);
+
+      if (!isRegistered) {
+        setError('Korisnik sa ovom email adresom vec postoji.');
+        return;
+      }
     }
 
     navigate('/profil');
@@ -69,7 +81,7 @@ const RegisterScreen = () => {
               </Button>
             </Form>
             <p className="mt-3 mb-0">
-              Već imate nalog? <Link to="/prijava">Prijavite se</Link>
+              Vec imate nalog? <Link to="/prijava">Prijavite se</Link>
             </p>
           </Card.Body>
         </Card>

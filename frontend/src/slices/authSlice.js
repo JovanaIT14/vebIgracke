@@ -28,6 +28,16 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
+      if (action.payload._id || action.payload.token) {
+        state.currentUser = {
+          ...action.payload,
+          id: action.payload._id || action.payload.id,
+          orders: action.payload.orders || [],
+        };
+        saveAuthState(state);
+        return;
+      }
+
       const { email, password } = action.payload;
       const user = state.userList.find((item) => item.email === email && item.password === password);
 
@@ -37,6 +47,24 @@ const authSlice = createSlice({
       }
     },
     register: (state, action) => {
+      if (action.payload._id || action.payload.token) {
+        const newUser = {
+          ...action.payload,
+          id: action.payload._id || action.payload.id,
+          orders: action.payload.orders || [],
+        };
+
+        const existingUser = state.userList.find((item) => item.email === newUser.email);
+
+        if (!existingUser) {
+          state.userList.push(newUser);
+        }
+
+        state.currentUser = newUser;
+        saveAuthState(state);
+        return;
+      }
+
       const { name, email, password } = action.payload;
       const existingUser = state.userList.find((item) => item.email === email);
 
@@ -58,9 +86,17 @@ const authSlice = createSlice({
       state.currentUser = null;
       saveAuthState(state);
     },
+    setCredentials: (state, action) => {
+      state.currentUser = {
+        ...action.payload,
+        id: action.payload._id || action.payload.id,
+        orders: action.payload.orders || [],
+      };
+      saveAuthState(state);
+    },
   },
 });
 
-export const { login, register, logout } = authSlice.actions;
+export const { login, register, logout, setCredentials } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -3,9 +3,13 @@ import { Alert, Button, Card, Col, Form, ListGroup, Row } from 'react-bootstrap'
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
+import { useCreateOrderMutation } from '../slices/ordersApiSlice';
 
 const CheckoutScreen = () => {
   const { cartItems, shippingAddress, saveShippingAddress, placeOrder } = useCart();
+  const { currentUser } = useUser();
+  const [createOrder] = useCreateOrderMutation();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState(shippingAddress.fullName || '');
   const [address, setAddress] = useState(shippingAddress.address || '');
@@ -16,11 +20,37 @@ const CheckoutScreen = () => {
   const [paypalPaid, setPaypalPaid] = useState(false);
   const totalPrice = cartItems.reduce((total, item) => total + item.cijena * item.quantity, 0);
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
     const newAddress = { fullName, address, city, postalCode, phone };
+    const isPaid = paymentMethod === 'PayPal' ? paypalPaid : false;
     saveShippingAddress(newAddress);
-    placeOrder(newAddress, paymentMethod, paymentMethod === 'PayPal' ? paypalPaid : false);
+
+    if (currentUser?.token) {
+      try {
+        await createOrder({
+          orderItems: cartItems.map((item) => ({
+            name: item.naziv,
+            qty: item.quantity,
+            image: item.slika,
+            price: item.cijena,
+            product: item.backendProduct || item.id,
+          })),
+          shippingAddress: {
+            ...newAddress,
+            country: 'Bosna i Hercegovina',
+          },
+          paymentMethod,
+          itemsPrice: totalPrice,
+          shippingPrice: 0,
+          taxPrice: 0,
+          totalPrice,
+        }).unwrap();
+      } catch (apiError) {
+      }
+    }
+
+    placeOrder(newAddress, paymentMethod, isPaid);
     navigate('/narudzbina');
   };
 

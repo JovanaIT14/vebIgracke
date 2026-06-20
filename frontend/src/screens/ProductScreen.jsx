@@ -1,18 +1,37 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Alert, Button, Col, Form, Image, ListGroup, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import Rating from '../components/Rating';
 import { useCart } from '../context/CartContext';
 import { getProducts } from '../productStorage';
+import { useGetProductDetailsQuery, useGetProductsQuery } from '../slices/productsApiSlice';
+import { toUiProduct } from '../utils/productAdapter';
 
 const ProductScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const [products] = useState(getProducts);
+  const { data: backendProduct, isError, isFetching, isLoading } = useGetProductDetailsQuery(id, {
+    skip: id.length < 12,
+  });
+  const { data: backendProducts } = useGetProductsQuery();
+  const fallbackProducts = useMemo(() => getProducts(), []);
   const [quantity, setQuantity] = useState(1);
-  const product = products.find((item) => item.id === id);
+  const cachedBackendProduct = backendProducts?.find((item) => item._id === id);
+  const product =
+    backendProduct && !isError
+      ? toUiProduct(backendProduct)
+      : cachedBackendProduct
+        ? toUiProduct(cachedBackendProduct)
+        : fallbackProducts.find((item) => item.id === id);
+  const isBackendProduct = id.length >= 12;
+  const isProductLoading =
+    isBackendProduct && !backendProduct && !cachedBackendProduct && !isError && (isLoading || isFetching);
+
+  if (isProductLoading) {
+    return <Alert variant="info">Ucitavanje proizvoda...</Alert>;
+  }
 
   if (!product) {
     return (

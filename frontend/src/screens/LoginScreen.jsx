@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { setCredentials } from '../slices/authSlice';
+import { useLoginMutation } from '../slices/usersApiSlice';
 
 const LoginScreen = () => {
   const navigate = useNavigate();
-  const { login } = useUser();
+  const dispatch = useDispatch();
+  const { login: localLogin } = useUser();
+  const [login] = useLoginMutation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
 
     if (!email || !password) {
@@ -18,11 +23,18 @@ const LoginScreen = () => {
       return;
     }
 
-    const isLoggedIn = login(email, password);
-
-    if (!isLoggedIn) {
-      setError('Email ili lozinka nisu ispravni.');
+    try {
+      const userData = await login({ email, password }).unwrap();
+      dispatch(setCredentials(userData));
+      navigate('/profil');
       return;
+    } catch (apiError) {
+      const isLoggedIn = localLogin(email, password);
+
+      if (!isLoggedIn) {
+        setError('Email ili lozinka nisu ispravni.');
+        return;
+      }
     }
 
     navigate('/profil');

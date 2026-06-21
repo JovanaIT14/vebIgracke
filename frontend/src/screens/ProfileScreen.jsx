@@ -3,11 +3,12 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice';
-import { useGetProfileQuery } from '../slices/usersApiSlice';
+import { useGetProfileQuery, useLogoutMutation } from '../slices/usersApiSlice';
 
 const ProfileScreen = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useUser();
+  const [logoutApi] = useLogoutMutation();
   const { data: profileData } = useGetProfileQuery(undefined, {
     skip: !currentUser?.token,
   });
@@ -17,7 +18,12 @@ const ProfileScreen = () => {
   const profileUser = profileData || currentUser;
   const orders = backendOrders || currentUser?.orders || [];
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
+    try {
+      await logoutApi().unwrap();
+    } catch (apiError) {
+    }
+
     logout();
     navigate('/prijava');
   };

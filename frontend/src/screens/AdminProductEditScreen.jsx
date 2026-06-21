@@ -3,10 +3,12 @@ import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
+import { BASE_URL } from '../constants';
 import {
   useCreateProductMutation,
   useGetProductDetailsQuery,
   useGetProductsQuery,
+  useUploadProductImageMutation,
   useUpdateProductMutation,
 } from '../slices/productsApiSlice';
 import { toApiProduct, toUiProduct } from '../utils/productAdapter';
@@ -22,6 +24,7 @@ const AdminProductEditScreen = () => {
   const { data: backendProducts } = useGetProductsQuery();
   const [createProduct] = useCreateProductMutation();
   const [updateProduct] = useUpdateProductMutation();
+  const [uploadProductImage] = useUploadProductImageMutation();
   const cachedProduct = backendProducts?.find((item) => item._id === id);
   const product =
     backendProduct && !isError ? toUiProduct(backendProduct) : cachedProduct ? toUiProduct(cachedProduct) : null;
@@ -35,6 +38,18 @@ const AdminProductEditScreen = () => {
   const [brojNaStanju, setBrojNaStanju] = useState('');
   const [rating, setRating] = useState('');
   const [error, setError] = useState('');
+
+  const uploadFileHandler = async (event) => {
+    const formData = new FormData();
+    formData.append('image', event.target.files[0]);
+
+    try {
+      const res = await uploadProductImage(formData).unwrap();
+      setSlika(`${BASE_URL}${res.image}`);
+    } catch (apiError) {
+      setError('Slika nije uploadovana.');
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -118,6 +133,10 @@ const AdminProductEditScreen = () => {
                 <Form.Group className="mb-3" controlId="slika">
                   <Form.Label>Slika</Form.Label>
                   <Form.Control value={slika} onChange={(event) => setSlika(event.target.value)} />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="imageFile">
+                  <Form.Label>Upload slike</Form.Label>
+                  <Form.Control type="file" onChange={uploadFileHandler} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="opis">
                   <Form.Label>Opis</Form.Label>

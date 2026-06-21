@@ -1,5 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
@@ -35,6 +36,17 @@ const addOrderItems = asyncHandler(async (req, res) => {
   });
 
   const createdOrder = await order.save();
+
+  await Promise.all(
+    order.orderItems.map((item) =>
+      Product.findByIdAndUpdate(item.product, {
+        $inc: {
+          countInStock: -item.qty,
+        },
+      })
+    )
+  );
+
   res.status(201).json(createdOrder);
 });
 

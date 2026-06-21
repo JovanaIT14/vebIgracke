@@ -33,6 +33,7 @@ function App() {
               <Route element={<PrivateRoute />}>
                 <Route path="checkout" element={<CheckoutScreen />} />
                 <Route path="narudzbina" element={<OrderScreen />} />
+                <Route path="narudzbina/:id" element={<OrderScreen />} />
                 <Route path="profil" element={<ProfileScreen />} />
               </Route>
               <Route element={<AdminRoute />}>

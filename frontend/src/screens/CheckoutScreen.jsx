@@ -16,19 +16,17 @@ const CheckoutScreen = () => {
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
   const [phone, setPhone] = useState(shippingAddress.phone || '');
-  const [paymentMethod, setPaymentMethod] = useState('Plaćanje pouzećem');
-  const [paypalPaid, setPaypalPaid] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('Placanje pouzecem');
   const totalPrice = cartItems.reduce((total, item) => total + item.cijena * item.quantity, 0);
 
   const submitHandler = async (event) => {
     event.preventDefault();
     const newAddress = { fullName, address, city, postalCode, phone };
-    const isPaid = paymentMethod === 'PayPal' ? paypalPaid : false;
     saveShippingAddress(newAddress);
 
     if (currentUser?.token) {
       try {
-        await createOrder({
+        const createdOrder = await createOrder({
           orderItems: cartItems.map((item) => ({
             name: item.naziv,
             qty: item.quantity,
@@ -46,17 +44,19 @@ const CheckoutScreen = () => {
           taxPrice: 0,
           totalPrice,
         }).unwrap();
+        placeOrder(newAddress, paymentMethod, false);
+        navigate(`/narudzbina/${createdOrder._id}`);
+        return;
       } catch (apiError) {
       }
     }
 
-    placeOrder(newAddress, paymentMethod, isPaid);
+    placeOrder(newAddress, paymentMethod, false);
     navigate('/narudzbina');
   };
 
   const paymentChangeHandler = (event) => {
     setPaymentMethod(event.target.value);
-    setPaypalPaid(false);
   };
 
   if (cartItems.length === 0) {
@@ -88,7 +88,7 @@ const CheckoutScreen = () => {
             <Form.Control value={city} onChange={(event) => setCity(event.target.value)} required />
           </Form.Group>
           <Form.Group className="mb-3" controlId="postalCode">
-            <Form.Label>Poštanski broj</Form.Label>
+            <Form.Label>Postanski broj</Form.Label>
             <Form.Control value={postalCode} onChange={(event) => setPostalCode(event.target.value)} required />
           </Form.Group>
           <Form.Group className="mb-3" controlId="phone">
@@ -96,14 +96,14 @@ const CheckoutScreen = () => {
             <Form.Control value={phone} onChange={(event) => setPhone(event.target.value)} required />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Način plaćanja</Form.Label>
+            <Form.Label>Nacin placanja</Form.Label>
             <Form.Check
               type="radio"
               id="cashOnDelivery"
-              label="Plaćanje pouzećem"
+              label="Placanje pouzecem"
               name="paymentMethod"
-              value="Plaćanje pouzećem"
-              checked={paymentMethod === 'Plaćanje pouzećem'}
+              value="Placanje pouzecem"
+              checked={paymentMethod === 'Placanje pouzecem'}
               onChange={paymentChangeHandler}
             />
             <Form.Check
@@ -117,18 +117,10 @@ const CheckoutScreen = () => {
             />
           </Form.Group>
           {paymentMethod === 'PayPal' && (
-            <div className="mb-3">
-              {paypalPaid ? (
-                <Alert variant="success">PayPal plaćanje je uspješno simulirano.</Alert>
-              ) : (
-                <Button type="button" variant="outline-primary" onClick={() => setPaypalPaid(true)}>
-                  Plati putem PayPal-a
-                </Button>
-              )}
-            </div>
+            <Alert variant="info">PayPal placanje ce biti dostupno nakon potvrde narudzbine.</Alert>
           )}
-          <Button type="submit" variant="primary" disabled={paymentMethod === 'PayPal' && !paypalPaid}>
-            Potvrdi narudžbinu
+          <Button type="submit" variant="primary">
+            Potvrdi narudzbinu
           </Button>
         </Form>
       </Col>
